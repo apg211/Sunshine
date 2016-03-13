@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (savedInstanceState == null) {
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.containerA, new ForecastFragment(), FORECASTFRAGMENT_TAG)
+                        .replace(R.id.container, new ForecastFragment(), FORECASTFRAGMENT_TAG)
                         .commit();
             }
         }
