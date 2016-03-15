@@ -11,8 +11,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-;
-
 public class MainActivity extends AppCompatActivity {
 
         private String mLocation;
