@@ -60,6 +60,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         setHasOptionsMenu(true);
     }
 
@@ -81,11 +82,11 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 // CursorAdapter returns a cursor at the correct position for getItem(), or null
                 // if it cannot seek to that position.
-            Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-                if(cursor != null) {
+                Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+                if (cursor != null) {
                     String locationSetting = Utility.getPreferredLocation(getActivity());
                     Intent intent = new Intent(getActivity(), DetailActivity.class)
-                            .setData(WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(locationSetting,cursor.getLong(COL_WEATHER_DATE)));
+                            .setData(WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(locationSetting, cursor.getLong(COL_WEATHER_DATE)));
 
                     startActivity(intent);
                 }
@@ -112,7 +113,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         weatherTask.execute(location);
     }
 
-    void onLocationChanged( ) {
+    void onLocationChanged() {
         updateWeather();
         getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
     }
