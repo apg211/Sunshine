@@ -15,24 +15,37 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
 
-        private String mLocation;
-        private final String FORECASTFRAGMENT_TAG = "FFTAG";
+    private String mLocation;
+    private static final String DETAILFRAGMENT_TAG = "DFTAG";
 
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            mLocation = Utility.getPreferredLocation(this);
+    private boolean mTwoPane;
 
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_main);
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        mLocation = Utility.getPreferredLocation(this);
 
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setIcon(R.drawable.ic_launcher);
+        if (findViewById(R.id.weather_detail_container) != null) {
+            // The detail container view will be present only in the large-screen layouts
+            // (res/layout-sw600dp). If this view is present, then the activity should be
+            // in two-pane mode.
+            mTwoPane = true;
+            // In two-pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using a
+            // fragment transaction.
             if (savedInstanceState == null) {
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.container, new ForecastFragment(), FORECASTFRAGMENT_TAG)
+                        .replace(R.id.weather_detail_container, new DetailActivityFragment(), DETAILFRAGMENT_TAG)
                         .commit();
             }
+        } else {
+            mTwoPane = false;
         }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -50,10 +63,10 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            startActivity(new Intent(this,SettingsActivity.class));
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
-        if(id == R.id.action_map){
+        if (id == R.id.action_map) {
             openPreferredLocationInMap();
             return true;
         }
@@ -64,27 +77,25 @@ public class MainActivity extends AppCompatActivity {
     private void openPreferredLocationInMap() {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         String location = sharedPrefs.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
-        Uri geoLocation = Uri.parse("geo:0,0?").buildUpon().appendQueryParameter("q",location).build();
+        Uri geoLocation = Uri.parse("geo:0,0?").buildUpon().appendQueryParameter("q", location).build();
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(geoLocation);
-        if(intent.resolveActivity(getPackageManager())!=null)
-        {
+        if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
-        } else
-        {
+        } else {
             Log.d("MainActivity", "could not find " + location + ", no receiving apps installed!");
         }
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         String location = Utility.getPreferredLocation(this);
         // update the location in our second pane using the fragment manager
-        if(location != null && !location.equals(mLocation)){
-            ForecastFragment ff = (ForecastFragment) getSupportFragmentManager().findFragmentByTag(FORECASTFRAGMENT_TAG);
-            if ( null != ff ) {
+        if (location != null && !location.equals(mLocation)) {
+            ForecastFragment ff = (ForecastFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_forecast);
+            if (null != ff) {
                 ff.onLocationChanged();
             }
             mLocation = location;
